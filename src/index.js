@@ -1,0 +1,1 @@
+export generateCRUDservices from './generateCRUDservices';
