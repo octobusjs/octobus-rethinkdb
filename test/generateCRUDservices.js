@@ -14,11 +14,11 @@ const userSchema = {
 
 const createDatabaseIfNotExists = (conn) => (
   r.dbList().run(conn).then((databases) => {
-    if (!databases.includes('test')) {
+    if (!Array.isArray(databases) || !databases.includes('test')) {
       return r.dbCreate('test').run(conn);
     }
 
-    return true;
+    return conn.use('test');
   })
 );
 

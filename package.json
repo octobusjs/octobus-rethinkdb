@@ -4,10 +4,11 @@
   "description": "A RethinkDB CRUD generator that will use octobus.js to create the needed services.",
   "main": "dist/index.js",
   "scripts": {
-    "watch:test": "npm t -- -w",
+    "test:watch": "npm t -- -w",
     "test": "mocha --compilers js:babel-register --require ./test/helper.js",
     "prebuild": "rimraf dist",
-    "build": "babel --copy-files --out-dir dist src",
+    "build": "babel src --copy-files --out-dir dist",
+    "prepublish": "npm run build",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
