@@ -8,10 +8,12 @@ notifications:
 node_js:
   - '5'
 before_install:
+  - sudo add-apt-repository ppa:rethinkdb/ppa && sudo apt-get update && sudo apt-get install rethinkdb
   - npm i -g npm@^3.0.0
 before_script:
   - npm prune
 script:
+  - rethinkdb
   - npm run test
 after_success:
   - npm run semantic-release
