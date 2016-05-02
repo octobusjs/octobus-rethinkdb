@@ -1,6 +1,6 @@
 {
   "name": "octobus-rethinkdb",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "A RethinkDB CRUD generator that will use octobus.js to create the needed services.",
   "main": "dist/index.js",
   "scripts": {
