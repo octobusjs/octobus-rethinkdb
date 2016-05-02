@@ -1,6 +1,6 @@
 {
   "name": "octobus-rethinkdb",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A RethinkDB CRUD generator that will use octobus.js to create the needed services.",
   "main": "dist/index.js",
   "scripts": {
@@ -20,6 +20,10 @@
     "event",
     "emitter",
     "microservices"
+  ],
+  "files": [
+    "dist",
+    "README.md"
   ],
   "author": "Victor Zamfir <zamfir.victor@gmail.com>",
   "license": "MIT",
