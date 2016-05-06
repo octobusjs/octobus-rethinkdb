@@ -12,7 +12,7 @@ const createTableIfNotExists = (r, conn, tableName) => (
   ))
 );
 
-export const generateCRUDservices = (namespace, _options = {}) => {
+export default (namespace, _options = {}) => {
   const options = Joi.attempt(_options, {
     tableName: Joi.string().default(extractTableName(namespace)),
     r: Joi.func().required(),
