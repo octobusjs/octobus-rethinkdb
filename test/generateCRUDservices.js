@@ -3,7 +3,7 @@ import Joi from 'joi';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { createEventDispatcher } from 'octobus.js';
-import { generateCRUDservices } from '../src/generateCRUDservices';
+import { generateCRUDservices } from '../src';
 
 const userSchema = {
   firstName: Joi.string().required(),
@@ -38,10 +38,12 @@ describe('generateCRUDservices', () => {
   beforeEach(() => {
     dispatcher = createEventDispatcher();
 
-    return generateCRUDservices('entity.User', { r, conn, schema: userSchema })
-      .then(({ namespace, map }) => {
-        dispatcher.subscribeMap(namespace, map);
-      });
+    return generateCRUDservices('entity.User', {
+      r, conn,
+      schema: userSchema
+    }).then(({ namespace, map }) => {
+      dispatcher.subscribeMap(namespace, map);
+    });
   });
 
   afterEach(() => r.table('User').delete().run(conn));
