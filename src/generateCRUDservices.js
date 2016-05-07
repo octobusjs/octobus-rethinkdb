@@ -6,22 +6,68 @@ const extractTableName = (namespace) => {
   return lastIndex > -1 && namespace.substr(lastIndex + 1);
 };
 
+const processIndexOptions = (r, options) => {
+  const processedOptions = [];
+  if (typeof options === 'string' && options.includes('.')) {
+    processedOptions.push(
+      options.split('.').reduce((acc, field) => acc(field), r.row)
+    );
+  }
+
+  if (Array.isArray(options)) {
+    processedOptions.push(
+      options.map((field) => r.row(field))
+    );
+  }
+
+  if (typeof options === 'object' && !Array.isArray(options)) {
+    processedOptions.push(options);
+  }
+
+  if (typeof options === 'function') {
+    processedOptions.push(options(r));
+  }
+
+  return processedOptions;
+};
+
+const createIndexesIfNotExist = (r, conn, tableName, indexes) => (
+  r.table(tableName).indexList().run(conn).then((existingIndexes) => (
+    Promise.all(Object.keys(indexes).map((indexName) => {
+      if (existingIndexes.includes(indexName)) {
+        return true;
+      }
+
+      const indexOptions = indexes[indexName];
+      return r.table(tableName).indexCreate(
+        ...[indexName].concat(processIndexOptions(r, indexOptions))
+      ).run(conn);
+    }))
+  ))
+);
+
 const createTableIfNotExists = (r, conn, tableName) => (
   r.tableList().run(conn).then((tables) => (
     !tables.includes(tableName) && r.tableCreate(tableName).run(conn)
   ))
 );
 
+const createTable = (r, conn, tableName, indexes) => (
+  createTableIfNotExists(r, conn, tableName)
+    .then(() => createIndexesIfNotExist(r, conn, tableName, indexes))
+);
+
 export default (namespace, _options = {}) => {
   const options = Joi.attempt(_options, {
     tableName: Joi.string().default(extractTableName(namespace)),
+    indexes: Joi.object().default({}),
     r: Joi.func().required(),
     conn: Joi.required(),
     schema: Joi.object(),
     autoCreateTable: Joi.boolean().default(true)
   });
 
-  const { tableName, r, conn, schema, autoCreateTable } = options;
+  const { tableName, r, conn, schema, autoCreateTable, indexes } = options;
   const getTable = () => r.table(tableName);
 
   const map = {
@@ -156,6 +202,6 @@ export default (namespace, _options = {}) => {
 
   const doSave = (data) => (data.id ? doUpdate(data.id, data) : doInsert(data));
 
-  return Promise.resolve(autoCreateTable && createTableIfNotExists(r, conn, tableName))
+  return Promise.resolve(autoCreateTable && createTable(r, conn, tableName, indexes))
     .then(() => ({ namespace, map }));
 };

@@ -8,8 +8,14 @@ import { generateCRUDServices } from '../src';
 const userSchema = {
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
+  email: Joi.string().email(),
   role: Joi.string(),
-  age: Joi.number()
+  age: Joi.number(),
+  birthdate: {
+    year: Joi.number(),
+    day: Joi.number()
+  },
+  hobbies: Joi.array().items(Joi.string())
 };
 
 const createDatabaseIfNotExists = (conn) => (
@@ -29,7 +35,9 @@ describe('generateCRUDServices', () => {
   before(() => (
     r.connect({}).then((_conn) => {
       conn = _conn;
-      return createDatabaseIfNotExists(conn);
+      return createDatabaseIfNotExists(conn).then(() => (
+        r.tableDrop('User')
+      ));
     }).error((err) => {
       throw err;
     })
@@ -40,7 +48,16 @@ describe('generateCRUDServices', () => {
 
     return generateCRUDServices('entity.User', {
       r, conn,
-      schema: userSchema
+      schema: userSchema,
+      indexes: {
+        email: 'email',
+        fullname: ['firstName', 'lastName'],
+        birthdateYear: 'birthdate.year',
+        hobbies: {
+          multi: true
+        },
+        summary: (_r) => (row) => _r.add(row('firstName'), '_', row('lastName'), '_', row('age'))
+      }
     }).then(({ namespace, map }) => {
       dispatcher.subscribeMap(namespace, map);
     });
@@ -157,4 +174,66 @@ describe('generateCRUDServices', () => {
   ));
 
   it('should find records');
+
+  it('should create a simple index', () => (
+    r.table('User').indexList().run(conn).then((indexes) => {
+      expect(indexes).to.include('email');
+    })
+  ));
+
+  it('should create an index based on a nested field', () => (
+    r.table('User').indexList().run(conn).then((indexes) => {
+      expect(indexes).to.include('birthdateYear');
+
+      return r.table('User').indexStatus().run(conn).then((statuses) => {
+        const index = statuses.find((status) => status.index === 'birthdateYear');
+
+        expect(index).to.be.ok();
+        expect(index.query).to
+          .match(/r.row\("birthdate"\)\("year"\)/);
+      });
+    })
+  ));
+
+  it('should create a multi index', () => (
+    r.table('User').indexList().run(conn).then((indexes) => {
+      expect(indexes).to.include('hobbies');
+
+      return r.table('User').indexStatus().run(conn).then((statuses) => {
+        const index = statuses.find((status) => status.index === 'hobbies');
+
+        expect(index).to.be.ok();
+        expect(index.multi).to.be.true();
+      });
+    })
+  ));
+
+  it('should create an index based on a function', () => (
+    r.table('User').indexList().run(conn).then((indexes) => {
+      expect(indexes).to.include('summary');
+
+      return r.table('User').indexStatus().run(conn).then((statuses) => {
+        const index = statuses.find((status) => status.index === 'summary');
+
+        expect(index).to.be.ok();
+        expect(index.query).to.match(
+          /r.add\(var[\d]\("firstName"\), "_", var[\d]\("lastName"\), "_", var[\d]\("age"\)\)/
+        );
+      });
+    })
+  ));
+
+  it('should create a compound index', () => (
+    r.table('User').indexList().run(conn).then((indexes) => {
+      expect(indexes).to.include('fullname');
+
+      return r.table('User').indexStatus().run(conn).then((statuses) => {
+        const index = statuses.find((status) => status.index === 'fullname');
+
+        expect(index).to.be.ok();
+        expect(index.query).to
+          .match(/r.expr\(\[r.row\("firstName"\), r.row\("lastName"\)\]\)/);
+      });
+    })
+  ));
 });
