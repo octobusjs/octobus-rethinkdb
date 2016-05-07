@@ -1,1 +1,1 @@
-export generateCRUDservices from './generateCRUDservices';
+export generateCRUDServices from './generateCRUDServices';
