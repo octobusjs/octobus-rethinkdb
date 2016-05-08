@@ -48,7 +48,7 @@ const createIndexesIfNotExist = (r, conn, tableName, indexes) => (
 
 const createTableIfNotExists = (r, conn, tableName) => (
   r.tableList().run(conn).then((tables) => (
-    !tables.includes(tableName) && r.tableCreate(tableName).run(conn)
+    !(Array.isArray(tables) && tables.includes(tableName)) && r.tableCreate(tableName).run(conn)
   ))
 );
 

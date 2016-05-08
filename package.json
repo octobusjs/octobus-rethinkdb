@@ -60,7 +60,7 @@
     "eslint-plugin-react": "^4.2.0",
     "ghooks": "1.2.1",
     "mocha": "^2.4.5",
-    "octobus.js": "0.2.0",
+    "octobus.js": "0.2.1",
     "rethinkdb": "2.3.1",
     "rimraf": "2.5.2",
     "semantic-release": "^4.3.5",
