@@ -76,7 +76,7 @@ export default (namespace, _options = {}) => {
     },
 
     find({ params }) {
-      return paramsToQuery(params).run(conn);
+      return paramsToQuery(params).run(conn).then((cursor) => cursor.toArray());
     },
 
     findOne({ params }) {

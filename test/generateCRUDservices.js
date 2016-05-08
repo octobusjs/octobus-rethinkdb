@@ -173,7 +173,27 @@ describe('generateCRUDServices', () => {
     ))
   ));
 
-  it('should find records');
+  it('should find multiple records', () => (
+    dispatcher.dispatch('entity.User.create', [{
+      firstName: 'John1',
+      lastName: 'Doe1'
+    }, {
+      firstName: 'John2',
+      lastName: 'Doe2'
+    }, {
+      firstName: 'John3',
+      lastName: 'Doe3'
+    }]).then(() => (
+      dispatcher.dispatch('entity.User.find', {
+        orderBy: { index: 'fullname' }
+      }).then((results) => {
+        expect(results).to.have.lengthOf(3);
+        expect(results[0].lastName).to.equal('Doe1');
+        expect(results[1].firstName).to.equal('John2');
+        expect(results[2].id).to.exist();
+      })
+    ))
+  ));
 
   it('should create a simple index', () => (
     r.table('User').indexList().run(conn).then((indexes) => {
