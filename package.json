@@ -37,11 +37,6 @@
     "lodash": "^4.11.1",
     "babel-runtime": "^6.6.1"
   },
-  "config": {
-    "ghooks": {
-      "pre-commit": "npm run test"
-    }
-  },
   "devDependencies": {
     "babel-cli": "^6.6.5",
     "babel-core": "^6.7.6",
@@ -60,7 +55,7 @@
     "eslint-plugin-react": "^4.2.0",
     "ghooks": "1.2.1",
     "mocha": "^2.4.5",
-    "octobus.js": "0.2.1",
+    "octobus.js": "0.3.0",
     "rethinkdb": "2.3.1",
     "rimraf": "2.5.2",
     "semantic-release": "^4.3.5",
