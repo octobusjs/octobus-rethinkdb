@@ -1,6 +1,6 @@
 {
   "name": "octobus-rethinkdb",
-  "version": "0.0.0-semantically-released",
+  "version": "0.2.0",
   "description": "A RethinkDB CRUD generator that will use octobus.js to create the needed services.",
   "main": "dist/index.js",
   "scripts": {
@@ -53,9 +53,8 @@
     "eslint": "^2.3.0",
     "eslint-config-airbnb": "^6.1.0",
     "eslint-plugin-react": "^4.2.0",
-    "ghooks": "1.2.1",
     "mocha": "^2.4.5",
-    "octobus.js": "0.3.0",
+    "octobus.js": "0.5.0",
     "rethinkdb": "2.3.1",
     "rimraf": "2.5.2",
     "semantic-release": "^4.3.5",

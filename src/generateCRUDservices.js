@@ -64,7 +64,7 @@ export default (namespace, _options = {}) => {
     r: Joi.func().required(),
     conn: Joi.required(),
     schema: Joi.object(),
-    autoCreateTable: Joi.boolean().default(true)
+    autoCreateTable: Joi.boolean().default(true),
   });
 
   const { tableName, r, conn, schema, autoCreateTable, indexes } = options;
@@ -99,7 +99,7 @@ export default (namespace, _options = {}) => {
       }
 
       return getTable().get(params.id).update(_.omit(params, 'id'), {
-        returnChanges: true
+        returnChanges: true,
       }).run(conn).then((result) => {
         const { changes } = result;
         return changes.length ? changes[0].new_val : params;
@@ -117,7 +117,7 @@ export default (namespace, _options = {}) => {
 
       return Joi.attempt(_.omit(params, 'id'), schema, {
         convert: true,
-        stripUnknown: true
+        stripUnknown: true,
       });
     },
 
@@ -135,7 +135,7 @@ export default (namespace, _options = {}) => {
 
     remove({ params = {} }) {
       return paramsToQuery(params).delete({ returnChanges: params.load }).run(conn);
-    }
+    },
   };
 
   const paramsToQuery = (params = {}) => {
@@ -189,7 +189,7 @@ export default (namespace, _options = {}) => {
 
   const doUpdate = (id, data) => (
     getTable().get(id).update(data, {
-      returnChanges: true
+      returnChanges: true,
     }).run(conn).then((result) => {
       const { changes } = result;
       if (!changes.length) {
